@@ -5,7 +5,7 @@ import BusinessLogic (searchBooks)
 
 main :: IO ()
 main = do
-  -- seaach for books with "Haskell" and "Language" in title or author fields, limit to 5 pages (== 500 books)
-  books <- searchBooks "Haskell Programming Language" 5
+  -- search for books with "Haskell" and "Language" in title or author fields, limit to 10 pages with 25 entries each (== 250 books maximum)
+  books <- searchBooks 25 10 "Haskell Language"
   putStrLn $ "Number of found books: " ++ show (length books)
   print $ map bkTitle books

@@ -27,7 +27,6 @@ library
   exposed-modules:
       BusinessLogic
       DomainModel
-      Lib
   other-modules:
       Paths_clean_architecture_with_functions
   hs-source-dirs:
