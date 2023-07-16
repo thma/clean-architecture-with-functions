@@ -8,11 +8,6 @@ import           Data.Aeson
 import           DomainModel         (Book (..))
 import           Network.HTTP.Simple (getResponseBody, httpJSON, parseRequest)
 
-data BookResp = BookResp
-  { brDocs  :: [Book],
-    brFound :: Int
-  }
-  deriving (Eq, Show)
 
 searchBooks :: String -> Int -> IO [Book]
 searchBooks queryString limitPages = do
@@ -29,6 +24,12 @@ getBookPage queryString pageId = do
   response <- httpJSON request
   return $ getResponseBody response
 
+data BookResp = BookResp
+  { brDocs  :: [Book],
+    brFound :: Int
+  }
+  deriving (Eq, Show)
+  
 instance FromJSON BookResp where
   parseJSON (Object br) =
     BookResp
