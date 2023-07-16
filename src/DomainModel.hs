@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module DomainModel
-  ( Book (..),
+  ( Book (..)
   )
 where
 
