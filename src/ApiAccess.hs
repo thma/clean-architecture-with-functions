@@ -8,7 +8,12 @@ import           Network.HTTP.Simple (getResponseBody, httpJSON, parseRequest)
 
 getBookPage :: BookPageFunction
 getBookPage queryString pageSize pageId = do
-  request <- parseRequest $ searchUrl ++ queryString ++ "&page=" ++ show pageId ++ "&limit=" ++ show pageSize
+  request <-
+    parseRequest $
+      searchUrl
+        ++ queryString
+        ++ "&page="  ++ show pageId
+        ++ "&limit=" ++ show pageSize
   response <- httpJSON request
   return $ getResponseBody response
 
