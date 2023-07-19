@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       ApiAccess
+      ApiModel
       BusinessLogic
       DomainModel
   other-modules:
@@ -59,14 +60,20 @@ test-suite clean-architecture-with-functions-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      MockApiImpl
+      PagingSpec
       Paths_clean_architecture_with_functions
   hs-source-dirs:
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson
+      QuickCheck
+    , aeson
     , base >=4.7 && <5
     , base-compat-batteries
     , clean-architecture-with-functions
+    , hspec
+    , hspec-discover
     , http-conduit
   default-language: Haskell2010
+  build-tool-depends: hspec-discover:hspec-discover == 2.*

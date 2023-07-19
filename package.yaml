@@ -60,3 +60,9 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - clean-architecture-with-functions
+    - hspec
+    - hspec-discover
+    - QuickCheck
+    verbatim:
+      build-tool-depends:
+        hspec-discover:hspec-discover == 2.*
