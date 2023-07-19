@@ -14,13 +14,19 @@ searchBooks pageSize limitPages queryString = do
   firstPage <- getBookPage queryString pageSize 1
   let numOfBooks = brFound firstPage
       numPages = min (numOfBooks `div` pageSize + 1) limitPages
-      otherPages = if numPages == 1 then [] else map (getBookPage queryString pageSize) [2 .. numPages]
+      otherPages = 
+        if numPages == 1 
+          then [] 
+          else map (getBookPage queryString pageSize) [2 .. numPages]
   allPages <- (firstPage :) <$> sequence otherPages
   return $ concatMap brDocs allPages
 
 getBookPage :: String -> Int -> Int -> IO BookResp
 getBookPage queryString pageSize pageId = do
-  request <- parseRequest $ searchUrl ++ queryString ++ "&page=" ++ show pageId ++ "&limit=" ++ show pageSize
+  request <- parseRequest $ 
+    searchUrl ++ queryString ++ 
+      "&page=" ++ show pageId ++ 
+      "&limit=" ++ show pageSize
   response <- httpJSON request
   return $ getResponseBody response
 
