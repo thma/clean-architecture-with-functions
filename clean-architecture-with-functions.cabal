@@ -61,7 +61,7 @@ test-suite clean-architecture-with-functions-test
   main-is: Spec.hs
   other-modules:
       MockApiImpl
-      PagingSpec
+      SearchBooksSpec
       Paths_clean_architecture_with_functions
   hs-source-dirs:
       test

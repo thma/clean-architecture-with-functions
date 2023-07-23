@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module ApiModel
-  ( BookPageFunction,
+  ( PageAccess,
     BookResp (..),
   )
 where
@@ -10,7 +10,7 @@ import           Data.Aeson
 import           DomainModel     (Book (..))
 import           Numeric.Natural
 
-type BookPageFunction = String -> Natural -> Natural -> IO BookResp
+type PageAccess = String -> Natural -> Natural -> IO BookResp
 
 data BookResp = BookResp
   { brDocs  :: [Book],

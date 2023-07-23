@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans     #-}
 
-module PagingSpec
+module SearchBooksSpec
   ( test,
     spec,
   )
@@ -38,8 +38,14 @@ spec = do
       let mockSearch = searchBooks (mockBookPageImpl 49) 5 10
       result <- mockSearch "Harry Potter"
       length result `shouldBe` 49
-    it "can deal with arbitrary result sizes" $ 
+    it "can deal with arbitrary result sizes" $
       property $ \resultSize -> do
         let mockSearch = searchBooks (mockBookPageImpl resultSize) 5 10
         result <- mockSearch "Harry Potter"
-        length result `shouldBe` (fromIntegral (min resultSize 50))
+        length result `shouldBe` fromIntegral (min resultSize 50)
+    it "can deal with arbitrary page sizes" $
+      property $ \ps -> do
+        let pageSize = ps + 1
+            mockSearch = searchBooks (mockBookPageImpl 100) pageSize 10
+        result <- mockSearch "Harry Potter"
+        length result `shouldBe` fromIntegral (min 100 (pageSize * 10))

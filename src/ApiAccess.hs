@@ -3,10 +3,10 @@ module ApiAccess
   )
 where
 
-import           ApiModel            (BookPageFunction)
+import           ApiModel            (PageAccess)
 import           Network.HTTP.Simple (getResponseBody, httpJSON, parseRequest)
 
-getBookPage :: BookPageFunction
+getBookPage :: PageAccess
 getBookPage queryString pageSize pageId = do
   request <-
     parseRequest $

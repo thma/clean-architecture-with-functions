@@ -3,11 +3,11 @@ module BusinessLogic
   )
 where
 
-import           ApiModel        (BookPageFunction, BookResp (..))
+import           ApiModel        (PageAccess, BookResp (..))
 import           DomainModel     (Book (..))
 import           Numeric.Natural
 
-searchBooks :: BookPageFunction -> Natural -> Natural -> String -> IO [Book]
+searchBooks :: PageAccess -> Natural -> Natural -> String -> IO [Book]
 searchBooks bookPageFun pageSize limitPages queryString = do
   firstPage <- bookPageFun queryString pageSize 1
   let numOfBooks = brFound firstPage
