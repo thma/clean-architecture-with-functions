@@ -27,8 +27,8 @@ library
   exposed-modules:
       ApiAccess
       ApiModel
-      BusinessLogic
       DomainModel
+      SearchUseCase
   other-modules:
       Paths_clean_architecture_with_functions
   hs-source-dirs:

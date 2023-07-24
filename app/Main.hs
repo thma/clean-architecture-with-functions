@@ -2,7 +2,7 @@ module Main (main) where
 
 
 import DomainModel (bkTitle)
-import BusinessLogic (searchBooks) 
+import SearchUseCase (searchBooks) 
 import ApiAccess (getBookPage)
 
 main :: IO ()

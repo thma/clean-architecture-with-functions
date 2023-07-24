@@ -1,6 +1,6 @@
-# clean-architecture-with-functions
+# Clean Architecture with functions only
 
-## Design challenges in seemingly simple programs
+## Interesting design challenges in seemingly simple programs
 
 The other day I was writing a Haskell program with quite a limited scope:
 
@@ -91,8 +91,7 @@ main :: IO ()
 main = do
   -- search for books with "Haskell Curry" in title or author fields, 
   -- limit to 10 pages of 50 books each (== 500 books)
-  let openLibrarySearch = searchBooks getBookPage 50 10
-  books <- openLibrarySearch "Haskell Curry" 
+  books <- searchBooks 50 10 "Haskell Language"
   putStrLn $ "Number of matching books: " ++ show (length books)
   mapM_ (putStrLn . bkTitle) books
 ````
@@ -104,19 +103,16 @@ Number of matching books: 34
 
 A quick manual check on the Open Library website confirms that the number of books found is indeed correct.
 
-That was is easy, wasn't it? 
+That was is easy, wasn't it? But wait, let's have a closer look by changing the page size...
 
-## My name is Thomas and I'm writing crappy code
-
-But wait, let's have a closer look by changing the page size...
+## It's just an off-by-one error...
 
 ````haskell
 main :: IO ()
 main = do
   -- search for books with "Haskell Curry" in title or author fields, 
   -- limit to 10 pages of 10 books each (== 100 books)
-  let openLibrarySearch = searchBooks getBookPage 10 10
-  books <- openLibrarySearch "Haskell Curry" 
+  books <- searchBooks 10 10 "Haskell Language"
   putStrLn $ "Number of matching books: " ++ show (length books)
   mapM_ (putStrLn . bkTitle) books
 ````
@@ -136,7 +132,7 @@ Next the total number of pages is calculated by dividing the number of books by 
 By binding the minimum of this value and the limit for the number of pages to the `numPages` variable, we ensure that we don't retrieve more pages than we asked for.
 Finally, the `otherPages` variable is bound to a list of all pages except the first page.
 
-And here we have our off-by-one error. The list comprehension should start at 2 instead of 1! 
+And here we have our off-by-one error. The list comprehension should start at 2 instead of 1:
 
 ````haskell 
 searchBooks :: Int -> Int -> String -> IO [Book]
@@ -155,31 +151,33 @@ searchBooks pageSize limitPages queryString = do
 This finding seems to be a perfect fit for the following quote:
 
 > There are only two hard problems in computer science: 
-> 1. cache invalidation 
-> 2. naming things. 
-> 3. off-by-one errors
+>
+> 0. cache invalidation 
+> 1. naming things. 
+> 2. off-by-one errors
 
 ## Do as I say, not as I do.
 
 At this point I felt a bit uncomfortable as I realized that I should have written some unit tests to catch this error. Or even better to start with the tests and then write the code.
 
 If you have read some of my other blog posts, you might have noticed that I'm a big fan of unit testing and property based testing in particular. 
+So why didn't I write any tests for this code? 
 
-So why didn't I write any tests for this code? The answer is simple: `searchBooks` is directly coupled to the page access function `getBookPage`.
+The answer is simple: `searchBooks` is directly coupled to the page access function `getBookPage`.
+All unit tests for `searchBooks` would interact directly with the real openlibrary API. This would render the tests unstable as the API could be offline or give different results over time.
 
-All unit tests for `searchBooks` would interact directly with the real openlibrary API. This would make the tests unstable as the API could be offline or give different results over time.
+So what can we do about this? We need to decouple the `searchBooks` function from the `getBookPage` function. Functional programming offers us a simple solution for this problem: *higher order functions*. In this case: allowing to pass the page access function as a parameter to `searchBooks`.
 
-So what can we do about this? We need to decouple the `searchBooks` function from the `getBookPage` function. Functional programming offers us a simple solution for this problem: *higher order functions*.
+## From cruft to craft
 
-## Higher order functions to the rescue
-
-Let's start by defining a type for the page access function. I have also changed the Int parameters to Natural values as we don't want to allow negative page sizes and offsets.
+In this section we will refactor the code to allow passing the page access function as a parameter to `searchBooks`.
+Let's start by defining a type for the page access function. I have also changed the `Int` parameters to `Natural` as I don't want to allow negative page sizes and offsets.
 
 ````haskell
 type PageAccess = String -> Natural -> Natural -> IO BookResp
 ````
 
-Next we will rewrite `getBookPage` to match this type:
+Next we will change the signature of `getBookPage` to match this type:
 
 ````haskell
 getBookPage :: PageAccess
@@ -211,7 +209,21 @@ searchBooks bookPageFun pageSize limitPages queryString = do
 ````haskell
 
 This simple change allows us to use searchBooks with different page access functions.
-We can use this decoupling to write unit tests for `searchBooks` without having to interact with the real API. We can now write a mock page access function which returns a fixed number of books:
+The main function now looks like this:
+
+````haskell
+main :: IO ()
+main = do
+  -- search for books with "Haskell Curry" in title or author fields, 
+  -- limit to 10 pages of 10 books each (== 100 books)
+  let openLibrarySearch = searchBooks getBookPage 10 10
+  books <- openLibrarySearch "Haskell Curry" 
+  putStrLn $ "Number of matching books: " ++ show (length books)
+  mapM_ (putStrLn . bkTitle) books
+````
+
+We can use this decoupling to pass a mock page access function to `searchBooks` in order to write unit tests for it.
+Let's start by writing a mock page access which returns a specified number of books:
 
 ````haskell
 -- | A mock implementation of the book page access function.
@@ -279,6 +291,10 @@ SearchBooks
     can deal with arbitrary page sizes [✔]
       +++ OK, passed 100 tests.
 ````
+
+So now we have a unit test suite for `searchBooks` which doesn't depend on the real API. This was made possible by decoupling the page access function from `searchBooks`.
+
+Fortunately in functional languages like Haskell, this is straightforward to achieve by passing functions as parameters.
 
 
 

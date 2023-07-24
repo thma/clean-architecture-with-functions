@@ -1,4 +1,4 @@
-module BusinessLogic
+module SearchUseCase
   ( searchBooks,
   )
 where
