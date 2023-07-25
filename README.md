@@ -206,9 +206,9 @@ searchBooks bookPageFun pageSize limitPages queryString = do
           else map (bookPageFun queryString pageSize) [2 .. numPages]
   allPages <- (firstPage :) <$> sequence otherPages
   return $ concatMap brDocs allPages
-````haskell
+````
 
-This simple change allows us to use searchBooks with different page access functions.
+This simple change allows us to use `searchBooks` with different page access functions.
 The main function now looks like this:
 
 ````haskell
@@ -222,7 +222,9 @@ main = do
   mapM_ (putStrLn . bkTitle) books
 ````
 
-We can use this decoupling to pass a mock page access function to `searchBooks` in order to write unit tests for it.
+## Finally, some unit tests
+
+We can now use this decoupling to pass a mock page access function to `searchBooks` in order to write unit tests for it.
 Let's start by writing a mock page access which returns a specified number of books:
 
 ````haskell
