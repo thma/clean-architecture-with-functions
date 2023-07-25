@@ -9,7 +9,7 @@ where
 import           Test.Hspec
 import           Test.QuickCheck
 import           MockApiImpl
-import           BusinessLogic
+import           SearchUseCase
 import           Numeric.Natural
 
 -- `test` is here so that this module can be run from GHCi on its own.  It is
