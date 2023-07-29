@@ -1,21 +1,21 @@
-# Clean Architecture with functions only
+# Clean Architecture revisited
 
 ## Interesting design challenges in seemingly simple programs
 
 The other day I was writing a Haskell program with quite a limited scope:
 
 - retrieving data from a REST API
-- storing the data in a CSV file.
+- storing the data in CSV files.
 
 The task at hand sounded simple enough to just start coding without too much upfront thinking.
-This blog post is about the process of discovering the shortcomings of my initial design and how I tried to improve them.
+This blog post is about the process of discovering the shortcomings of my initial design and how I improved them by some simple refactorings.
 As all the interesting stuff happened in the API access, I'll focus on that part of the code.
 
 In order to allow you to experiment with the code yourself, I'm not using the proprietary API of my original project but rather a publicly available REST API (https://openlibrary.org/developers/api) in this blog post.
 
 ## The initial design
 
-So let's start with the domain data types:
+So without further ado, let's start with the domain data types:
 
 ````haskell
 data Book = Book
@@ -294,11 +294,34 @@ SearchBooks
       +++ OK, passed 100 tests.
 ````
 
-So now we have a unit test suite for `searchBooks` which doesn't depend on the real API. This was made possible by decoupling the page access function from `searchBooks`.
+So now we have a unit test suite for `searchBooks` which doesn't depend on the real API. This was made possible by decoupling the page access function from `searchBooks`. 
 
-Fortunately in functional languages like Haskell, this is straightforward to achieve by passing functions as parameters.
+## Decoupling and Clean Architecture
 
+In order to illustrate the decoupling achieved by this refactoring, I have created a dependency graph of the modules involved. The arrows indicate the direction of the dependencies. The `searchBooks` function (in the `SearchUseCase` module) does only depend on the `PageAccess` type (in the `ApiModel` module) and of course on the `Book` type in the `DomainModel` module. 
 
+The `Main` module takes the `getBookPage` function (from module `ApiAccess`) and passes it to the `searchBooks` function in order to work against the real API.
+`getBookPage` only depends on the `PageAccess` type.
+
+![dependencies](img/dependencies-with-functions.png)
+
+(Generated with [GraphMod](https://hackage.haskell.org/package/graphmod))
+
+This is exactly the kind of decoupling that the [clean architecture](https://thma.github.io/posts/2020-05-29-polysemy-clean-architecture.html) advocates:
+
+> The overriding rule that makes this architecture work is The Dependency Rule. 
+> This rule says that source code dependencies can only point inwards. 
+> Nothing in an inner circle can know anything at all about something in an outer circle. 
+> In particular, the name of something declared in an outer circle must not be mentioned by the code in the an inner circle. 
+> That includes, functions, classes. variables, or any other named software entity.
+> 
+> Quoted from [Clean Architecture blog post](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+
+![clean architecture](img/clean-architecture-with-functions.png)
+
+I hope that this post has shown you that the clean architecture is not only applicable to large projects but also to small ones. Even in such small projects it can help to decouple the different parts of the code and greatly improve the testability.
+
+Luckily for us Haskell programmers, we don't need to use any frameworks to achieve this decoupling. We can use simple higher order functions to achieve the same result.
 
 <!--
 ormolu -i src/*            
