@@ -319,9 +319,9 @@ This is exactly the kind of decoupling that the [clean architecture](https://thm
 
 ![clean architecture](img/clean-architecture-with-functions.png)
 
-I hope that this post has shown you that the clean architecture is not only applicable to large projects but also to small ones. Even in such small projects it can help to decouple the different parts of the code and greatly improve the testability.
+I hope that this post has shown you that the clean architecture is not only applicable to large projects. Even in very small projects it can help to decouple business logic from infrastructure code and thus greatly improve testability.
 
-Luckily for us Haskell programmers, we don't need to use any frameworks to achieve this decoupling. We can use simple higher order functions to achieve the same result.
+Luckily for us Haskell programmers, we don't need to use any frameworks to achieve this decoupling. We can use higher order functions to achieve the same result.
 
 <!--
 ormolu -i src/*            
